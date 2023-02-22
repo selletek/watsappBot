@@ -43,6 +43,7 @@ def append_interaction_to_chat_log(question, answer, chat_log=None):
 
 @csrf_exempt
 def message(request):
+    print(os.getenv("openaikey", None))
     if request.POST.get("Body"):
         chat_log = request.session.get("chat_log")
         if chat_log is not None:
