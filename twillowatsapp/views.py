@@ -4,8 +4,9 @@ from django.http import JsonResponse
 from twilio.twiml.messaging_response import Message, MessagingResponse
 from django.http import HttpResponse
 import openai
+import os
 
-openai.api_key = "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"
+openai.api_key = os.getenv("openaikey", None)
 
 start_sequence = "\AmazonBot:"
 restart_sequence = "\nPerson:"
@@ -27,7 +28,7 @@ def ask(question, chat_log=None):
     prompt = f"{chat_log}{restart_sequence}: {question}{start_sequence}:",
     engine="text-davinci-003",
     temperature=0.2,
-    max_tokens=50,
+    max_tokens=200,
     top_p=1,
     frequency_penalty=0,
     presence_penalty=0.3,
