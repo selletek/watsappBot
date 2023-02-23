@@ -20,4 +20,5 @@ from . import views as vw
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('recive-a-message/', vw.message,name="message"),
+    path('send-a-message/', vw.send_message,name="send_message"),
 ]

@@ -2,37 +2,31 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from twilio.twiml.messaging_response import Message, MessagingResponse
+from twilio.rest import Client 
 from django.http import HttpResponse
+from django.utils import timezone
 import openai
 import os
 
-openai.api_key = os.getenv("openaikey", None)
+from twillowatsapp.settings import account_sid,auth_token
+
+openai.api_key = os.getenv("openaikey",None)
 #prompts
-start_sequence = "\AmazonBot:"
-restart_sequence = "\nPerson:"
-session_prompt = """You are a amazon bot. who provides information regarding Amazon. if the question is not in amazon domain you can say "i am not expert in that area". do not provide any information about topics that are not about Amazon. you are a bot and you don't have a name.
-Person: is it possible to sell items on amazon?
-AmazonBot: yes you can sell items on Amazon.
-Person: why google have ads.
-AmazonBot: sorry, i am not an expert in that area.
-Person: give me a three sentence description on improving sales on amazon.
-AmazonBot: 1. Utilize Amazon's advertising tools to increase visibility of your products.
-2. Offer competitive prices and good customer service to attract buyers.
-3. Leverage Amazon's fulfillment services to reduce shipping costs and increase customer satisfaction.
-Person: why did facebook bought instagram?
-AmazonBot: Sorry, I am not an expert in that area.\n"""
+start_sequence = "\AI:"
+restart_sequence = "\nHuman:"
+session_prompt = f"""The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly and answers in language used in question.Today is {timezone.now().date()} {timezone.now().strftime("%A")} \n\nHuman: Hello, who are you?\nAI: I am an AI Assistant. How can I help you today?"""
 
 
 def ask(question, chat_log=None):
     res = openai.Completion.create(
     prompt = f"{chat_log}{restart_sequence}: {question}{start_sequence}:",
     engine="text-davinci-003",
-    temperature=0.2,
+    temperature=0.9,
     max_tokens=200,
     top_p=1,
     frequency_penalty=0,
-    presence_penalty=0.3,
-    stop=["\n"],
+    presence_penalty=0.6,
+    stop=["Human:","AI:"],
     )
     return str(res['choices'][0]['text'])
 
@@ -41,9 +35,20 @@ def append_interaction_to_chat_log(question, answer, chat_log=None):
         chat_log = session_prompt 
     return f"{chat_log}{restart_sequence} {question}{start_sequence}{answer}"
 
+def send_message(request):
+    client = Client(account_sid, auth_token) 
+    message = client.messages.create( 
+                                from_='whatsapp:+14155238886',  
+                                body='Your appointment is coming up on July 21 at 3PM',      
+                                to='whatsapp:+923129601966' 
+                            ) 
+    
+    return JsonResponse({},status=200)
+
+
+
 @csrf_exempt
 def message(request):
-    print(os.getenv("openaikey", None))
     if request.POST.get("Body"):
         chat_log = request.session.get("chat_log")
         if chat_log is not None:
@@ -51,7 +56,6 @@ def message(request):
                 chat_log = session_prompt
         else:
             chat_log = session_prompt
-        print(chat_log)
         body = request.POST.get("Body")+"\n"
         answer = ask(body, chat_log)
         request.session["chat_log"] = append_interaction_to_chat_log(body, answer,chat_log)

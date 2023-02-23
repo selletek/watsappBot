@@ -16,9 +16,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", "False") == "True"
+DEBUG = os.getenv("DEBUG", "True") == "True"
 
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",")
 
 
 # Application definition
@@ -65,7 +65,7 @@ WSGI_APPLICATION = 'twillowatsapp.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "False") == "True"
+DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "True") == "True"
 print(DEVELOPMENT_MODE)
 if DEVELOPMENT_MODE is True:
     DATABASES = {
@@ -124,3 +124,5 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 # Uncomment if you have extra static files and a directory in your GitHub repo.
 # If you don't have this directory and have this uncommented your build will fail
 # STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
+account_sid = 'AC52b0b9741607dacd7e6d4ca36d62a00c' 
+auth_token = 'aed31678266ca3ef1dbed2a9bf42b984' 

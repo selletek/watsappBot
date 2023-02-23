@@ -32,3 +32,4 @@ cache
 *.coverage
 *.json
 temp/*.csv
+.env
