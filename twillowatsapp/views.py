@@ -51,8 +51,8 @@ def send_message(request):
 
 @csrf_exempt
 def re_message(request):
-    chalenge = request.GET.get("challenge")
-    mode = request.GET.get("mode")
+    chalenge = request.GET.get("hub.challenge")
+    mode = request.GET.get("hub.mode")
     print(chalenge)
     print(mode)
     return HttpResponse(str(chalenge))
