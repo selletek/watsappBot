@@ -121,8 +121,9 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATICFILES_DIRS = (os.path.join(str(os.path.join(BASE_DIR)), 'static'), )
 MEDIA_URL = '/media/'
-STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'static_cdn' , 'static_root')
-MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'media_cdn' , 'media_root')
+
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+MEDIA_ROOT = os.path.join(BASE_DIR, "mediafiles")
 
 # Uncomment if you have extra static files and a directory in your GitHub repo.
 # If you don't have this directory and have this uncommented your build will fail
