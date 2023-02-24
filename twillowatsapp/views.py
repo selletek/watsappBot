@@ -55,8 +55,7 @@ def send_ai_message(request,number,message):
             chat_log = session_prompt
     else:
         chat_log = session_prompt
-    body = request.POST.get("Body")+"\n"
-    answer = ask(body, chat_log)
+    answer = ask(message, chat_log)
     message = {
       "messaging_product": "whatsapp",
       "recipient_type": "individual",
