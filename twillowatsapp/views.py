@@ -82,6 +82,7 @@ def re_message(request):
         if request.method == "POST":
             data = request.body
             data_dict = json.loads(data.decode("utf-8"))['entry'][0]['changes'][0]['value']
+            message = ""
             if data_dict.get('messages',None):
                 data_dict = data_dict['messages'][0]
                 number = data_dict['from']
