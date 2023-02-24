@@ -7,6 +7,8 @@ from django.http import HttpResponse
 from django.utils import timezone
 import openai
 import os
+import requests
+import json
 
 from twillowatsapp.settings import account_sid,auth_token
 
@@ -39,23 +41,26 @@ def append_interaction_to_chat_log(question, answer, chat_log=None):
         chat_log = session_prompt 
     return f"{chat_log}{restart_sequence} {question}{start_sequence}{answer}"
 
-def send_message(request):
-    client = Client(account_sid, auth_token) 
-    message = client.messages.create( 
-                                from_='whatsapp:+14155238886',  
-                                body='Your appointment is coming up on July 21 at 3PM',      
-                                to='whatsapp:+923335721063' 
-                            ) 
-    
-    return JsonResponse({},status=200)
+def send_message(request,number):
+    authorization = os.getenv("watsapp_key",None)
+    headers = {'Authorization': f'Bearer {authorization}',"Content-Type":"application/json"}
+    message = {"messaging_product": "whatsapp", "to": f"{number}", "type": "template", "template": { "name": "hello_world", "language": { "code": "en_US" } } }
+    req = requests.post("https://graph.facebook.com/v15.0/108632675494612/messages",headers=headers,data=json.dumps(message))
+    return JsonResponse({},status=200) 
 
 @csrf_exempt
 def re_message(request):
     chalenge = request.GET.get("hub.challenge")
     mode = request.GET.get("hub.mode")
-    print(chalenge)
-    print(mode)
-    return HttpResponse(str(chalenge))
+    if mode == "subscribe":
+        return HttpResponse(str(chalenge))
+    else:
+        if request.method == "POST":
+            print(request.POST)
+        else:
+            print(request.POST,request.GET)
+
+
 
 @csrf_exempt
 def message(request):
