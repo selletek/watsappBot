@@ -48,7 +48,15 @@ def send_message(request,number):
     req = requests.post("https://graph.facebook.com/v15.0/108632675494612/messages",headers=headers,data=json.dumps(message))
     return JsonResponse({},status=200) 
 
-def send_ai_message(number):
+def send_ai_message(request,number,message):
+    chat_log = request.session.get("chat_log")
+    if chat_log is not None:
+        if len(chat_log) > 1500 or not chat_log:
+            chat_log = session_prompt
+    else:
+        chat_log = session_prompt
+    body = request.POST.get("Body")+"\n"
+    answer = ask(body, chat_log)
     message = {
       "messaging_product": "whatsapp",
       "recipient_type": "individual",
@@ -56,7 +64,7 @@ def send_ai_message(number):
       "type": "text",
       "text": {
         "preview_url": False,
-        "body": "wow"
+        "body": f"{answer}"
         }
     }
     authorization = os.getenv("watsapp_key",None)
@@ -74,10 +82,12 @@ def re_message(request):
     else:
         if request.method == "POST":
             data = request.body
-            data_dict = json.loads(data.decode("utf-8"))['entry'][0]['changes'][0]['value']['messages'][0]
-            number = data_dict['from']
-            message = data_dict['text']['body']
-            send_ai_message(number)
+            data_dict = json.loads(data.decode("utf-8"))['entry'][0]['changes'][0]['value']
+            if data_dict.get('messages',None):
+                data_dict = data_dict[0]
+                number = data_dict['from']
+                message = data_dict['text']['body']
+                send_ai_message(request,number,message)
             print(request.POST,data_dict,message)
         else:
             print(request.POST,request.GET)
