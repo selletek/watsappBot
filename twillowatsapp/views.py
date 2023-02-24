@@ -91,7 +91,7 @@ def re_message(request):
             print(request.POST,data_dict,message)
         else:
             print(request.POST,request.GET)
-    HttpResponse(str("ok"))
+    return HttpResponse(str("ok"))
 
 
 
