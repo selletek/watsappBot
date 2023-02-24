@@ -49,14 +49,14 @@ def send_message(request,number):
     return JsonResponse({},status=200) 
 
 def send_ai_message(request,number,message):
-    chat_log = request.session.get("chat_log")
+    chat_log = request.session.get(f"{number}")
     if chat_log is not None:
         if len(chat_log) > 1500 or not chat_log:
             chat_log = session_prompt
     else:
         chat_log = session_prompt
     answer = ask(message, chat_log)
-    message = {
+    wat_message = {
       "messaging_product": "whatsapp",
       "recipient_type": "individual",
       "to": f"{number}",
@@ -66,9 +66,10 @@ def send_ai_message(request,number,message):
         "body": f"{answer}"
         }
     }
+    request.session[f"number"] = append_interaction_to_chat_log(message, answer, chat_log=None)
     authorization = os.getenv("watsapp_key",None)
     headers = {'Authorization': f'Bearer {authorization}',"Content-Type":"application/json"}
-    req = requests.post("https://graph.facebook.com/v15.0/108632675494612/messages",headers=headers,data=json.dumps(message))
+    req = requests.post("https://graph.facebook.com/v15.0/108632675494612/messages",headers=headers,data=json.dumps(wat_message))
 
     
 

@@ -47,7 +47,7 @@ ROOT_URLCONF = 'twillowatsapp.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, "templates")],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -119,10 +119,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATICFILES_DIRS = (os.path.join(str(os.path.join(BASE_DIR)), 'static'), )
+MEDIA_URL = '/media/'
+STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'static_cdn' , 'static_root')
+MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'media_cdn' , 'media_root')
 
 # Uncomment if you have extra static files and a directory in your GitHub repo.
 # If you don't have this directory and have this uncommented your build will fail
 # STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
-account_sid = 'AC52b0b9741607dacd7e6d4ca36d62a00c' 
-auth_token = 'aed31678266ca3ef1dbed2a9bf42b984' 
+account_sid = os.getenv("twillo_account_sid", "*")
+auth_token = os.getenv("twillo_auth_token", "*")
