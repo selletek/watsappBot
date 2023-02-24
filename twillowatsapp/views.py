@@ -42,7 +42,7 @@ def append_interaction_to_chat_log(question, answer, chat_log=None):
     return f"{chat_log}{restart_sequence} {question}{start_sequence}{answer}"
 
 def send_message(request,number):
-    authorization = os.getenv("watsapp_key",None)
+    authorization = os.getenv("watsapp_key","EAAutF11M8dIBAG1p6V2EZAzwvsj5HDyaqrGhA7zuputoKTXTKGGugJIcfvPZB5jm4tNG9r7VKUetFGeZADnuZChpA7zzbZCrkp3qcRX6kCCZCie7JQXuBRkvAANcweRR74i0en7cKD6ZApBWuqVR2zWzBFePZCr8kU2YTD42AZCb7Ps11M8ZAD5f5vHYwVoozCB819TiepNJUMVQZDZD")
     headers = {'Authorization': f'Bearer {authorization}',"Content-Type":"application/json"}
     message = {"messaging_product": "whatsapp", "to": f"{number}", "type": "template", "template": { "name": "hello_world", "language": { "code": "en_US" } } }
     req = requests.post("https://graph.facebook.com/v15.0/108632675494612/messages",headers=headers,data=json.dumps(message))
@@ -56,9 +56,12 @@ def re_message(request):
         return HttpResponse(str(chalenge))
     else:
         if request.method == "POST":
-            print(request.POST)
+            data = request.body
+            data_dict = json.loads(data.decode("utf-8")) 
+            print(request.POST,data_dict)
         else:
             print(request.POST,request.GET)
+    HttpResponse(str("ok"))
 
 
 
